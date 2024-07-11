@@ -4,12 +4,21 @@
 	<title>Responsive Sidebar demo suggested by Brave AI</title>
 	<link rel="stylesheet" href="styles.css">
 	<style>/*some additional style -- to be migrated into "style.css"*/
-		blockquote:{text-style:italics}
+		blockquote:{font:italics}
 	</style>
 	<script type="text/javascript" src="script.js"></script>
 </head>
 <body><!-- The main content wrapper -->
 <div class="content-wrapper">
+    <!-- The sidebar navigation -->
+    <nav class="cd-side-nav">
+	    <button class="cd-side-hide">[Hide]</button>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
   <!-- The main content -->
   <main>
 	<h1>Responsive Sidebar demo suggested by Brave AI</h1>
@@ -30,14 +39,5 @@
 	    <h2>Update:</h2>
 	    Tweaks by MFH to reduce code duplication and try to make it work.
     </div>
-    <!-- The sidebar navigation -->
-    <nav class="cd-side-nav">
-	    <button class="cd-side-hide">[Hide]</button>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </nav>
   </main>
 </div>
