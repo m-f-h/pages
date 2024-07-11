@@ -10,6 +10,7 @@
   <!-- The main content -->
   <main>
     <!-- The page main content -->
+	  <button class="cf-nav-trigger">[nav trigger]</button>
     <div class="page-content">
       <!-- Your page content here --> 
 	    Brave said (upon search "How do I create a responsive sidebar menu?"):
@@ -38,11 +39,11 @@
 </div>
 <script>
   // Add event listener to the navigation trigger
-document.querySelector('.cd-nav-trigger').addEventListener('click', function() {
+document.querySelector('.cd-side-hide').addEventListener('click', function() {
   // Toggle the sidebar navigation
   document.querySelector('.cd-side-nav').classList.toggle('active');
 });
-document.querySelector('.cd-side-hide').addEventListener('click', function() {
+document.querySelector('.cd-nav-trigger').addEventListener('click', function() {
   // Toggle the sidebar navigation
   document.querySelector('.cd-side-nav').classList.toggle('active');
 });
