@@ -1,0 +1,68 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Sidebar Navigation Styles
+ * MFH: changes witdth 250 -> 150px */
+.cd-side-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 150px;
+  height: 100vh;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.cd-side-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cd-side-nav li {
+  margin-bottom: 20px;
+}
+
+.cd-side-nav a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.cd-side-nav a:hover {
+  background-color: #444;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+  .cd-side-variable {
+    position: absolute;
+  }
+}
+@media only screen and (max-width: 480px) {
+  .cd-side-variable {
+    position: fixed;
+  }
+}
+/* MFH: separated common (below) and variable parts (above) */
+  .cd-side-nav {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
