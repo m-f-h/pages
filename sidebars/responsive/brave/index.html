@@ -21,9 +21,12 @@
 		    You can customize this example to fit your specific needs and requirements.
 	    </blockquote>
 	    But it doesn't work as promised / at all!
+	    <h2>Update:</h2>
+	    Tweaks by MFH to reduce code duplication and try to make it work.
     </div>
     <!-- The sidebar navigation -->
     <nav class="cd-side-nav">
+	    <button class="cd-side-hide">[Hide]</button>
       <ul>
         <li><a href="#">Home</a></li>
         <li><a href="#">About</a></li>
@@ -80,22 +83,17 @@
 
 /* Responsive Styles */
 @media only screen and (max-width: 768px) {
-  .cd-side-nav {
+  .cd-side-variable {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    transition: all 0.3s ease;
   }
 }
-
 @media only screen and (max-width: 480px) {
-  .cd-side-nav {
+  .cd-side-variable {
     position: fixed;
+  }
+}
+/* MFH: separated common (below) and variable parts (above) */
+  .cd-side-nav {
     top: 0;
     left: 0;
     width: 100%;
@@ -105,11 +103,14 @@
     padding: 20px;
     transition: all 0.3s ease;
   }
-}
 </style>
 <script>
   // Add event listener to the navigation trigger
 document.querySelector('.cd-nav-trigger').addEventListener('click', function() {
+  // Toggle the sidebar navigation
+  document.querySelector('.cd-side-nav').classList.toggle('active');
+});
+document.querySelector('.cd-side-hide').addEventListener('click', function() {
   // Toggle the sidebar navigation
   document.querySelector('.cd-side-nav').classList.toggle('active');
 });
