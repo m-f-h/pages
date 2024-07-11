@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Page Title</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body><!-- The main content wrapper -->
+<div class="content-wrapper">
+  <!-- The main content -->
+  <main>
+    <!-- The sidebar navigation -->
+    <nav class="cd-side-nav">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+    <!-- The page main content -->
+    <div class="page-content">
+      <!-- Your page content here -->
+    </div>
+  </main>
+</div>
+<style>
+  /* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Sidebar Navigation Styles */
+.cd-side-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.cd-side-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cd-side-nav li {
+  margin-bottom: 20px;
+}
+
+.cd-side-nav a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.cd-side-nav a:hover {
+  background-color: #444;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+  .cd-side-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .cd-side-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+}
+</style>
+<script>
+  // Add event listener to the navigation trigger
+document.querySelector('.cd-nav-trigger').addEventListener('click', function() {
+  // Toggle the sidebar navigation
+  document.querySelector('.cd-side-nav').classList.toggle('active');
+});
+</script>
