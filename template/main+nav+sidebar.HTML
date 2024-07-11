@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Template with Sidebar and Navigation Bar</title>
+	<link rel="stylesheet" href="main.css"><!-- cf. https://meiert.com/en/blog/stupidest-style-sheet-name/ -->
+</head>
+<body>
+	<!-- Navigation Bar -->
+	<nav class="nav-bar">
+		<ul>
+			<li><a href="#">Home</a></li>
+			<li><a href="#">About</a></li>
+			<li><a href="#">Contact</a></li>
+		</ul>
+	</nav>
+	<!-- Sidebar -->
+	<aside class="sidebar">
+		<h2>Sidebar</h2>
+		<ul>
+			<li><a href="#">Sidebar Link 1</a></li>
+			<li><a href="#">Sidebar Link 2</a></li>
+			<li><a href="#">Sidebar Link 3</a></li>
+		</ul>
+	</aside>
+	
+	<!-- Main Content -->
+	<main class="main-content">
+		<h1>Main Content</h1>
+		<p>This is the main content area.</p>
+	</main>
+	
+	<script src="script.js"></script><!-- put at end *OR USE defer ATTRIBUTE* in case you want to use things like 
+                                        document.querySelector('.nav-trigger').addEventListener('click', function {...}); -->
+</body>
+</html>
