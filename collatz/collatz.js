@@ -7,11 +7,9 @@
                 y: cy + r * Math.sin(angleInRadians)
             };
         }
-
         // Helper: Generate SVG Path string for an arc
         function describeArc(cx, cy, r, startAngle, endAngle) {
-            let start = polarToCartesian(cx, cy, r, startAngle);
-            let end = polarToCartesian(cx, cy, r, endAngle);
+            let start = polarToCartesian(cx, cy, r, startAngle), end = polarToCartesian(cx, cy, r, endAngle);
             
             // Sweep flag is 1 for increasing angle (CW rendering in SVG coords)
             let sweepFlag = "1"; 
@@ -29,13 +27,13 @@
             const unit_len = parseInt(document.getElementById('in_unit_len').value);
             const thickness = parseInt(document.getElementById('in_thickness').value);
             const font_size = parseInt(document.getElementById('in_font_size').value);
-            const truncate = document.getElementById('in_truncate').checked;
+            const truncate = parseInt(document.getElementById('truncate').value);
+            const position = document.getElementById('position').value;
             
             const color_straight = document.getElementById('color_straight').value;
             const color_arc = document.getElementById('color_arc').value;
 
-            let nodes = [];
-            let edges = [];
+            let nodes = [], edges = [];
 
             // Queue elements: { n: BigInt, dist: int, angle: float, cw_bound: float }
             // cw_bound maintains the available angle space partitioned by previous branches
@@ -49,7 +47,7 @@
                 nodes.push(current);
 
                 // Stop expanding this branch if we truncate at multiples of 3
-                if (truncate && is_mult_3) continue;
+                if (is_mult_3 && truncate && (truncate==1 || !(current.n & 1n)) continue;
 
                 let n_minus_1 = current.n - 1n;
                 let new_cw_bound = current.cw_bound;
@@ -58,11 +56,16 @@
                 if (n_minus_1 % 3n === 0n) {
                     let m = n_minus_1 / 3n;
                     // Validate Collatz rules: must be odd, and we skip 1
-                    if (m > 1n && m % 2n !== 0n) {
-                        // Place arc child in exactly half the available angular space
-                        let child3_angle = (current.angle + current.cw_bound) / 2;
-                        new_cw_bound = child3_angle; // Update boundary for the radial ray
-
+                    if (m > 1n && (m & 1n)) {
+                        let m_mod_3 = m % 3n, t = 0.5;
+                        // Place arc child; for multiples of 3, depending on "position" setting.
+                        if (!m_mod_3 && position!="middle")
+                                if (position=="end") t = 0.9; // in any case
+                                else if (truncate) t = 0.1; // only if truncated
+                        let child3_angle = current.angle + (current.cw_bound - current.angle)*t;
+                        // Update boundary for the radial ray
+                        // if not multiple of 3, or not truncated
+                        if (m_mod_3 || !truncate) new_cw_bound = child3_angle; 
                         let child3 = { 
                             n: m, 
                             dist: current.dist, 
@@ -90,13 +93,11 @@
             }
 
             // --- Render SVG ---
-            const svg = document.getElementById('canvas');
-            svg.innerHTML = '';
+            const svg = document.getElementById('canvas'); svg.innerHTML = '';
             
             // Calculate necessary canvas dimensions based on maximum radius
             const R_max = (max_gen + 1.5) * unit_len;
-            const cx = R_max;
-            const cy = R_max;
+            const cx = R_max, cy = R_max;
             svg.setAttribute('width', R_max * 2);
             svg.setAttribute('height', R_max * 2);
 
@@ -119,8 +120,7 @@
 
             const edgeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
             const nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            svg.appendChild(edgeGroup);
-            svg.appendChild(nodeGroup);
+            svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
 
             // Draw Edges
             edges.forEach(edge => {
