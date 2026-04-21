@@ -1,0 +1,111 @@
+/* CSS for drawing ym "polar reverse Collatz graph"
+ */
+body {
+            margin: 0;
+            display: flex;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #f4f5f7;
+        }
+        #sidebar {
+            width: 320px;
+            padding: 20px;
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            z-index: 10;
+            overflow-y: auto;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+        p.desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        #main {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: #fafafa;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #444;
+        }
+        input[type="number"], input[type="color"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #444;
+            cursor: pointer;
+        }
+        .checkbox-group input {
+            transform: scale(1.2);
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        button {
+            padding: 12px 15px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        svg {
+            display: block;
+            margin: 0 auto;
+        }
+        .node-circle {
+            fill: #ffffff;
+            stroke: #333333;
+        }
+        .node-text {
+            font-family: monospace;
+            text-anchor: middle;
+            dominant-baseline: central;
+            pointer-events: none;
+        }
+        /* Styling for multiples of 3 */
+        .node-mult-3 .node-circle {
+            fill: #fff3e0;
+            stroke: #ff9800;
+        }
+        .node-mult-3 .node-text {
+            fill: #e65100;
+            font-weight: bold;
+        }
+        .edge-straight {
+            fill: none;
+        }
+        .edge-arc {
+            fill: none;
+        }
