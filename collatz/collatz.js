@@ -22,22 +22,24 @@
             ].join(" ");
         }
 
-        function drawGraph() {
-            const max_gen = parseInt(document.getElementById('in_max_gen').value);
-            const unit_len = parseInt(document.getElementById('in_unit_len').value);
-            const thickness = parseInt(document.getElementById('in_thickness').value);
-            const font_size = parseInt(document.getElementById('in_font_size').value);
-            const truncate = parseInt(document.getElementById('truncate').value);
-            const position = document.getElementById('position').value;
-            
-            const color_straight = document.getElementById('color_straight').value;
-            const color_arc = document.getElementById('color_arc').value;
+const setAttributes = (el, attrs) => Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+const geValue = (id) => document.getElementById(id).value;
+const getInt = (id) => parseInt(geValue(id));
 
+        function drawGraph() {
+            const max_gen   = getInt('in_max_gen');
+            const unit_len  = getInt('in_unit_len');
+            const thickness = getInt('in_thickness');
+            const font_size = getInt('in_font_size');
+            const truncate  = getInt('truncate');
+            const position  = geValue('position').value;
+            const color_straight = geValue('color_straight');
+            const color_arc      = geValue('color_arc');
             let nodes = [], edges = [];
 
             // Queue elements: { n: BigInt, dist: int, angle: float, cw_bound: float }
             // cw_bound maintains the available angle space partitioned by previous branches
-            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: -360 }];
+            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: 360 }];
 
             while (queue.length > 0) {
                 let current = queue.shift();
@@ -55,38 +57,30 @@
                 // 1. Check for valid 3n+1 reverse child
                 if (n_minus_1 % 3n === 0n) {
                     let m = n_minus_1 / 3n;
-                    // Validate Collatz rules: must be odd, and we skip 1
-                    if (m > 1n && (m & 1n)) {
+                    // Validate Collatz rules: must be odd (and we DON'T skip 1)
+                    if (m & 1n) {
                         let m_mod_3 = m % 3n, t = 0.5;
                         // Place arc child; for multiples of 3, depending on "position" setting.
                         if (!m_mod_3 && position!="middle")
                                 if (position=="end") t = 0.9; // in any case
                                 else if (truncate) t = 0.1; // only if truncated
                         let child3_angle = current.angle + (current.cw_bound - current.angle)*t;
-                        // Update boundary for the radial ray
-                        // if not multiple of 3, or not truncated
-                        if (m_mod_3 || !truncate) new_cw_bound = child3_angle; 
-                        let child3 = { 
-                            n: m, 
-                            dist: current.dist, 
-                            angle: child3_angle, 
-                            cw_bound: current.cw_bound 
-                        };
-                        
-                        queue.push(child3);
+                        let child3 = { n: m, dist: current.dist, angle: child3_angle, cw_bound: current.cw_bound };
                         edges.push({ type: 'arc', source: child3, target: current, dist: current.dist });
+                        if (m > 1n) {
+                                queue.push(child3);
+                                // Update boundary for the radial ray
+                                // if not multiple of 3, or not truncated
+                                if (m_mod_3 || !truncate) new_cw_bound = child3_angle; 
+                        }
                     }
                 }
 
                 // 2. Generate radial *2 child
                 if (current.dist < max_gen) {
-                    let child2 = { 
-                        n: current.n * 2n, 
-                        dist: current.dist + 1, 
-                        angle: current.angle, 
+                    let child2 = { n: current.n * 2n, dist: current.dist + 1, angle: current.angle, 
                         cw_bound: new_cw_bound // Uses updated boundary if an arc branched off
                     };
-                    
                     queue.push(child2);
                     edges.push({ type: 'straight', source: child2, target: current });
                 }
@@ -98,8 +92,7 @@
             // Calculate necessary canvas dimensions based on maximum radius
             const R_max = (max_gen + 1.5) * unit_len;
             const cx = R_max, cy = R_max;
-            svg.setAttribute('width', R_max * 2);
-            svg.setAttribute('height', R_max * 2);
+            setAttributes(svg, {width: R_max * 2, height: R_max * 2});
 
             // Compute ideal arrow offsets based on node radius
             const node_radius = Math.max(12, font_size * 0.85);
@@ -129,24 +122,15 @@
                     let p2 = polarToCartesian(cx, cy, edge.target.dist * unit_len, edge.target.angle);
                     
                     let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute('x1', p1.x); 
-                    line.setAttribute('y1', p1.y);
-                    line.setAttribute('x2', p2.x); 
-                    line.setAttribute('y2', p2.y);
-                    line.setAttribute('stroke', color_straight);
-                    line.setAttribute('stroke-width', thickness);
-                    line.setAttribute('class', 'edge-straight');
-                    line.setAttribute('marker-end', 'url(#arrow_straight)');
+                    setAttributes(line, {x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, class: 'edge-straight',
+                         stroke: color_straight, 'stroke-width': thickness, 'marker-end': 'url(#arrow_straight)' } );
                     edgeGroup.appendChild(line);
                 } else {
                     let d = describeArc(cx, cy, edge.dist * unit_len, edge.source.angle, edge.target.angle);
                     
                     let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    path.setAttribute('d', d);
-                    path.setAttribute('stroke', color_arc);
-                    path.setAttribute('stroke-width', thickness);
-                    path.setAttribute('class', 'edge-arc');
-                    path.setAttribute('marker-end', 'url(#arrow_arc)');
+                    setAttributes(path, {d: d, stroke: color_arc, 'stroke-width': thickness,
+                                         class: 'edge-arc', 'marker-end': 'url(#arrow_arc)'} );
                     edgeGroup.appendChild(path);
                 }
             });
@@ -159,22 +143,14 @@
                 if (node.is_mult_3) g.setAttribute('class', 'node-mult-3');
 
                 let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute('cx', p.x);
-                circle.setAttribute('cy', p.y);
-                circle.setAttribute('r', node_radius);
-                circle.setAttribute('class', 'node-circle');
-                circle.setAttribute('stroke-width', thickness);
+                setAttributes(circle, {cx: p.x, cy: p.y, r: node_radius, class: 'node-circle', 'stroke-width': thickness});
                 g.appendChild(circle);
 
                 let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute('x', p.x);
-                // Adjust slight optical alignment for central baseline
-                text.setAttribute('y', p.y + (font_size * 0.05)); 
-                text.setAttribute('class', 'node-text');
-                text.setAttribute('font-size', font_size);
+                // Adjust slight optical y alignment for central baseline
+                setAttributes(text, {x: p.x, y: p.y + font_size * 0.05, class: 'node-text', 'font-size': font_size});
                 text.textContent = node.n.toString();
                 g.appendChild(text);
-
                 nodeGroup.appendChild(g);
             });
             
