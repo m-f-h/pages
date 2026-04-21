@@ -47,7 +47,7 @@
                 nodes.push(current);
 
                 // Stop expanding this branch if we truncate at multiples of 3
-                if (is_mult_3 && truncate && (truncate==1 || !(current.n & 1n)) continue;
+                if (is_mult_3 && truncate && (truncate==1 || !(current.n & 1n))) continue;
 
                 let n_minus_1 = current.n - 1n;
                 let new_cw_bound = current.cw_bound;
