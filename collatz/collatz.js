@@ -50,7 +50,7 @@ function drawGraph() {
             let m = n_minus_1 / 3n;
             // Validate Collatz rules: must be odd (and we DON'T skip 1)
             if (m & 1n) {
-                let m_mod_3 = m % 3n, t = middle;
+                let m_mod_3 = m % 3n, t = middle / 100.0;
                 // Place arc child. For multiples of 3, depending on "position" setting.
                 if (!m_mod_3 && position!="middle")
                         if (position=="end") t = 0.85; // TODO: better formula to avoid getting too close
