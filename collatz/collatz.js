@@ -54,7 +54,7 @@ const getInt = (id) => parseInt(geValue(id));
                 let n_minus_1 = current.n - 1n;
                 let new_cw_bound = current.cw_bound;
 
-                // 1. Check for valid 3n+1 reverse child
+                // Check for valid 3n+1 reverse child
                 if (n_minus_1 % 3n === 0n) {
                     let m = n_minus_1 / 3n;
                     // Validate Collatz rules: must be odd (and we DON'T skip 1)
@@ -67,16 +67,14 @@ const getInt = (id) => parseInt(geValue(id));
                         let child3_angle = current.angle + (current.cw_bound - current.angle)*t;
                         let child3 = { n: m, dist: current.dist, angle: child3_angle, cw_bound: current.cw_bound };
                         edges.push({ type: 'arc', source: child3, target: current, dist: current.dist });
-                        if (m > 1n) {
-                                queue.push(child3);
-                                // Update boundary for the radial ray
-                                // if not multiple of 3, or not truncated
-                                if (m_mod_3 || !truncate) new_cw_bound = child3_angle; 
-                        }
-                    }
+                        queue.push(child3);
+                        // Update boundary for the radial ray
+                        // if not multiple of 3, or not truncated, and not for m=1
+                        if ((m_mod_3 || !truncate) && m > 1n) new_cw_bound = child3_angle; 
+                    } else if (!m) continue; // that was m = 1: don't generate *2 child
                 }
 
-                // 2. Generate radial *2 child
+                // Generate radial *2 child
                 if (current.dist < max_gen) {
                     let child2 = { n: current.n * 2n, dist: current.dist + 1, angle: current.angle, 
                         cw_bound: new_cw_bound // Uses updated boundary if an arc branched off
