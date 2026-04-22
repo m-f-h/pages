@@ -12,7 +12,7 @@
             let start = polarToCartesian(cx, cy, r, startAngle), end = polarToCartesian(cx, cy, r, endAngle);
             
             // Sweep flag is 1 for increasing angle (CW rendering in SVG coords)
-            let sweepFlag = "1"; 
+            let sweepFlag = "0"; 
             let sweepAngle = endAngle - startAngle;
             let largeArcFlag = sweepAngle <= 180 ? "0" : "1";
 
@@ -39,7 +39,7 @@ const getInt = (id) => parseInt(geValue(id));
 
             // Queue elements: { n: BigInt, dist: int, angle: float, cw_bound: float }
             // cw_bound maintains the available angle space partitioned by previous branches
-            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: -360 }];
+            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: 360 }];
 
             while (queue.length > 0) {
                 let current = queue.shift();
