@@ -7,7 +7,7 @@ function polarToCartesian(cx, cy, r, degrees) {
 function describeArc(cx, cy, r, startAngle, endAngle) {
     let start = polarToCartesian(cx, cy, r, startAngle), end = polarToCartesian(cx, cy, r, endAngle);    
     // Sweep flag is 1 for increasing angle (CW rendering in SVG coords)
-    let sweepFlag = "0", sweepAngle = endAngle - startAngle, largeArcFlag = sweepAngle <= 180 ? 0 : 1;
+    let sweepFlag = "0", sweepAngle = Math.abs(endAngle - startAngle), largeArcFlag = sweepAngle <= 180 ? 0 : 1;
     return [ "M", start.x, start.y, "A", r, r, 0, largeArcFlag, sweepFlag, end.x, end.y
     ].join(" ");
 }
@@ -23,6 +23,7 @@ function drawGraph() {
     const font_size = getInt('in_font_size');
     const truncate  = getInt('truncate');
     const position  = geValue('position');
+    const middle    = geValue('middle');
     const color_straight = geValue('color_straight');
     const color_arc      = geValue('color_arc');
     let nodes = [], edges = [];
@@ -49,7 +50,7 @@ function drawGraph() {
             let m = n_minus_1 / 3n;
             // Validate Collatz rules: must be odd (and we DON'T skip 1)
             if (m & 1n) {
-                let m_mod_3 = m % 3n, t = 0.35; // default = 35%, because it gets crowded towards the end
+                let m_mod_3 = m % 3n, t = middle;
                 // Place arc child. For multiples of 3, depending on "position" setting.
                 if (!m_mod_3 && position!="middle")
                         if (position=="end") t = 0.85; // TODO: better formula to avoid getting too close
@@ -83,8 +84,8 @@ function drawGraph() {
     const cx = R_max, cy = R_max;
     setAttributes(svg, {width: R_max * 2, height: R_max * 2});
 
+    const node_radius = Math.max(12, font_size * 0.85);
     // Compute ideal arrow offsets based on node radius
-    //const node_radius = Math.max(12, font_size * 0.85);
     // refX sets the offset of the arrowhead from the exact target coordinate
     //const refX = 10 + node_radius + thickness; 
 
@@ -105,20 +106,34 @@ function drawGraph() {
 
     // Draw Edges
     edges.forEach(edge => {
+        // The visual boundary of the target node
+        let target_boundary_dist = node_radius + (thickness / 2);
+    
         if (edge.type === 'straight') {
-            let p1 = polarToCartesian(cx, cy, edge.source.dist * unit_len, edge.source.angle);
-            let p2 = polarToCartesian(cx, cy, edge.target.dist * unit_len, edge.target.angle);
+            // Straight lines go inward. We stop the target radius early.
+            let R_source = edge.source.dist * unit_len;
+            let R_target = edge.target.dist * unit_len + target_boundary_dist;
+            let p1 = polarToCartesian(cx, cy, R_source, edge.source.angle);
+            let p2 = polarToCartesian(cx, cy, R_target, edge.target.angle);
             
             let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            setAttributes(line, {x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, class: 'edge-straight',
-                 stroke: color_straight, 'stroke-width': thickness, 'marker-end': 'url(#arrow_straight)' } );
-            edgeGroup.appendChild(line);
+            setAttributes(line, { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, class: 'edge-straight',
+                stroke: color_straight, 'stroke-width': thickness, 'marker-end': 'url(#arrow_straight)' });
+            edgeGroup.appendChild(line);    
         } else {
-            let d = describeArc(cx, cy, edge.dist * unit_len, edge.source.angle, edge.target.angle);
+            // Arcs run along the circumference of a circle. We stop the angle early.
+            let R = edge.dist * unit_len;        
+            // Calculate how many degrees we need to back up to hit the node's perimeter
+            let offset_rad = target_boundary_dist / R; 
+            let offset_deg = offset_rad * 180 / Math.PI;
             
+            // Because source angle > target angle, we ADD the offset to stop early
+            let endAngle = edge.target.angle + offset_deg;
+            let d = describeArc(cx, cy, R, edge.source.angle, endAngle);
             let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            setAttributes(path, {d: d, stroke: color_arc, 'stroke-width': thickness,
-                                 class: 'edge-arc', 'marker-end': 'url(#arrow_arc)'} );
+
+            setAttributes(path, { d: d, stroke: color_arc, 'stroke-width': thickness, fill: 'none',
+                                  class: 'edge-arc', 'marker-end': 'url(#arrow_arc)' });
             edgeGroup.appendChild(path);
         }
     });
