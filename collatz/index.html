@@ -15,7 +15,7 @@
         
         <div class="control-group">
             <label for="in_max_gen">Max Generations (Distance)</label>
-            <input type="number" id="in_max_gen" value="7" min="1" max="30">
+            <input type="number" id="in_max_gen" value="10" min="1" max="30">
         </div>
         <div class="control-group">
             <label for="in_unit_len">Unit Length (px spacing)</label>
@@ -42,12 +42,12 @@
             </label>
 <select name="truncate" id="truncate">
   <option value="0">Dont't truncate</option>
-  <option value="1" default=1>Truncate at 1st</option>
-  <option value="2">Truncate at 2nd</option>
+  <option value="1">Truncate at 1st</option>
+  <option value="2" selected=1>Truncate at 2nd</option>
 </select>
 <select name="position" id="position">
   <option value="start">Position: start</option>
-  <option value="middle">Position: middle</option>
+  <option value="middle" selected=1>Position: middle</option>
   <option value="end">Position: end</option>
 </select>
         </div>
