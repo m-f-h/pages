@@ -7,7 +7,7 @@ function polarToCartesian(cx, cy, r, degrees) {
 function describeArc(cx, cy, r, startAngle, endAngle) {
     let start = polarToCartesian(cx, cy, r, startAngle), end = polarToCartesian(cx, cy, r, endAngle);    
     // Sweep flag is 1 for increasing angle (CW rendering in SVG coords)
-    let sweepFlag = "0", sweepAngle = Math.abs(endAngle - startAngle), largeArcFlag = sweepAngle <= 180 ? 0 : 1;
+    let sweepFlag = 0, sweepAngle = Math.abs(endAngle - startAngle), largeArcFlag = sweepAngle <= 180 ? 0 : 1;
     return [ "M", start.x, start.y, "A", r, r, 0, largeArcFlag, sweepFlag, end.x, end.y
     ].join(" ");
 }
@@ -104,10 +104,10 @@ function drawGraph() {
     const nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
     svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
 
-    // Draw Edges
+// Draw Edges
     edges.forEach(edge => {
         // The visual boundary of the target node
-        let target_boundary_dist = node_radius + (thickness / 2);
+        let target_boundary_dist = node_radius + thickness / 2;
     
         if (edge.type === 'straight') {
             // Straight lines go inward. We stop the target radius early.
@@ -123,12 +123,18 @@ function drawGraph() {
         } else {
             // Arcs run along the circumference of a circle. We stop the angle early.
             let R = edge.dist * unit_len;        
-            // Calculate how many degrees we need to back up to hit the node's perimeter
             let offset_rad = target_boundary_dist / R; 
             let offset_deg = offset_rad * 180 / Math.PI;
             
             // Because source angle > target angle, we ADD the offset to stop early
             let endAngle = edge.target.angle + offset_deg;
+            
+            // FIX: Prevent offset overshoot! If the offset is longer than the arc itself, 
+            // cap it so SVG doesn't draw backwards around an alternate center.
+            if (endAngle >= edge.source.angle) {
+                endAngle = edge.source.angle - 0.1; 
+            }
+
             let d = describeArc(cx, cy, R, edge.source.angle, endAngle);
             let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
@@ -137,7 +143,7 @@ function drawGraph() {
             edgeGroup.appendChild(path);
         }
     });
-
+    
     // Draw Nodes
     nodes.forEach(node => {
         let p = polarToCartesian(cx, cy, node.dist * unit_len, node.angle);
