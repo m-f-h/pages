@@ -39,7 +39,7 @@ const getInt = (id) => parseInt(geValue(id));
 
             // Queue elements: { n: BigInt, dist: int, angle: float, cw_bound: float }
             // cw_bound maintains the available angle space partitioned by previous branches
-            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: 360 }];
+            let queue = [{ n: 2n, dist: 0, angle: 0, cw_bound: -360 }];
 
             while (queue.length > 0) {
                 let current = queue.shift();
@@ -71,7 +71,8 @@ const getInt = (id) => parseInt(geValue(id));
                         // Update boundary for the radial ray
                         // if not multiple of 3, or not truncated, and not for m=1
                         if ((m_mod_3 || !truncate) && m > 1n) new_cw_bound = child3_angle; 
-                    } else if (!m) continue; // that was m = 1: don't generate *2 child
+                    }
+                    else if (!m) continue; // That was n = 1: don't generate *2 child!
                 }
 
                 // Generate radial *2 child
