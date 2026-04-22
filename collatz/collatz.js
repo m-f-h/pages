@@ -59,11 +59,11 @@ const getInt = (id) => parseInt(geValue(id));
                     let m = n_minus_1 / 3n;
                     // Validate Collatz rules: must be odd (and we DON'T skip 1)
                     if (m & 1n) {
-                        let m_mod_3 = m % 3n, t = 0.5;
-                        // Place arc child; for multiples of 3, depending on "position" setting.
+                        let m_mod_3 = m % 3n, t = 0.40; // default = 40%, because it gets crowded towards the end
+                        // Place arc child. For multiples of 3, depending on "position" setting.
                         if (!m_mod_3 && position!="middle")
-                                if (position=="end") t = 0.9; // in any case
-                                else if (truncate) t = 0.1; // only if truncated
+                                if (position=="end") t = 0.85; // TODO: better formula to avoid getting too close
+                                else if (truncate) t = 0.15; // only if truncated. TODO: as above
                         let child3_angle = current.angle + (current.cw_bound - current.angle)*t;
                         let child3 = { n: m, dist: current.dist, angle: child3_angle, cw_bound: current.cw_bound };
                         edges.push({ type: 'arc', source: child3, target: current, dist: current.dist });
@@ -101,10 +101,10 @@ const getInt = (id) => parseInt(geValue(id));
             // Create SVG definitions for Arrowheads
             const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
             defs.innerHTML = `
-                <marker id="arrow_straight" viewBox="0 0 10 10" refX="${refX}" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <marker id="arrow_straight" viewBox="0 0 10 10" refX="${refX}" markerUnits="userSpaceOnUse" refY="5" markerWidth="7" markerHeight="7" orient="auto">
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="${color_straight}" />
                 </marker>
-                <marker id="arrow_arc" viewBox="0 0 10 10" refX="${refX}" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <marker id="arrow_arc" viewBox="0 0 10 10" refX="${refX}" refY="5" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" orient="auto">
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="${color_arc}" />
                 </marker>
             `;
