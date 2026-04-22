@@ -32,7 +32,7 @@ const getInt = (id) => parseInt(geValue(id));
             const thickness = getInt('in_thickness');
             const font_size = getInt('in_font_size');
             const truncate  = getInt('truncate');
-            const position  = geValue('position').value;
+            const position  = geValue('position');
             const color_straight = geValue('color_straight');
             const color_arc      = geValue('color_arc');
             let nodes = [], edges = [];
@@ -44,12 +44,12 @@ const getInt = (id) => parseInt(geValue(id));
             while (queue.length > 0) {
                 let current = queue.shift();
                 
-                let is_mult_3 = (current.n % 3n === 0n);
-                current.is_mult_3 = is_mult_3;
+                let n_mod_3 = Number(current.n % 3n);
+                current.n_mod_3 = n_mod_3;
                 nodes.push(current);
 
                 // Stop expanding this branch if we truncate at multiples of 3
-                if (is_mult_3 && truncate && (truncate==1 || !(current.n & 1n))) continue;
+                if (!n_mod_3 && truncate && (truncate==1 || !(current.n & 1n))) continue;
 
                 let n_minus_1 = current.n - 1n;
                 let new_cw_bound = current.cw_bound;
@@ -139,7 +139,7 @@ const getInt = (id) => parseInt(geValue(id));
                 let p = polarToCartesian(cx, cy, node.dist * unit_len, node.angle);
                 
                 let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                if (node.is_mult_3) g.setAttribute('class', 'node-mult-3');
+                if (!node.n_mod_3) g.setAttribute('class', 'node-mult-3');
 
                 let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 setAttributes(circle, {cx: p.x, cy: p.y, r: node_radius, class: 'node-circle', 'stroke-width': thickness});
